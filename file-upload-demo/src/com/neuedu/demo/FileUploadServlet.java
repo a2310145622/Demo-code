@@ -19,6 +19,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 /**
  * DESC: 文件上传示例 
@@ -37,13 +38,10 @@ public class FileUploadServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-//		req.setCharacterEncoding("UTF-8");
 		DiskFileItemFactory factory = new DiskFileItemFactory();
-		
-//		File file = new File(this.getServletContext().getRealPath("/upload"));
-//		factory.setRepository(file);
-		
+
 		ServletFileUpload upload = new ServletFileUpload(factory);
+		upload.setHeaderEncoding("UTF-8");
 		FileOutputStream fos = null;
 		
 		try {
@@ -57,18 +55,13 @@ public class FileUploadServlet extends HttpServlet {
 				if(it.isFormField()) {
 					String name = it.getFieldName();
 					String value = it.getString();
-					System.out.println( name + ":" + value );
+					System.out.println( name + ":" + new String(value.getBytes("ISO-8859-1"), "UTF-8") );
 				} else {	// 处理文件域：将上传的文件保存到服务器的磁盘上
 					String fileName = it.getName();
 
 					InputStream is = it.getInputStream();
 					fos = new FileOutputStream(this.getServletContext().getRealPath("/upload/" + fileName));
-					byte[] buffer = new byte[10240];
-					int len = 0;
-					while( (len = is.read(buffer)) != -1 ) {
-						fos.write(buffer, 0, len);
-						fos.flush();
-					}
+					IOUtils.copy(is, fos);
 					fos.close();
 				}
 			}

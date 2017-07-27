@@ -8,7 +8,7 @@
 
 <h1>文件上传示例</h1>
 
-<form action="upload" method="post" enctype="multipart/form-data">
+<form action="upload2" method="post" enctype="multipart/form-data">
 
 	<input type="text" name="uname"> <br/>
 	<input type="file" name="file1"> <br/>
